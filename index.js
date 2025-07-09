@@ -1,19 +1,24 @@
 import { tool } from "@langchain/core/tools";
 import { z } from "zod";
 import { ChatOpenAI } from "@langchain/openai";
+import { config } from "dotenv";
+import { ToolNode } from "@langchain/langgraph/prebuilt";
+
+config();
 
 const llm = new ChatOpenAI({
   apiKey: process.env.OPENAI_API_KEY,
   modelName: "gpt-4o",
 });
 
+// Define tools
 const multiply = tool(
-  async(({ a, b }) => {
-    return a * b;
-  }),
+  async ({ a, b }) => {
+    return `${a * b}`;
+  },
   {
     name: "multiply",
-    description: "Multiply two numbers",
+    description: "Multiply two numbers together",
     schema: z.object({
       a: z.number().describe("first number"),
       b: z.number().describe("second number"),
@@ -23,7 +28,7 @@ const multiply = tool(
 
 const add = tool(
   async ({ a, b }) => {
-    return a + b;
+    return `${a + b}`;
   },
   {
     name: "add",
@@ -37,7 +42,7 @@ const add = tool(
 
 const divide = tool(
   async ({ a, b }) => {
-    return a / b;
+    return `${a / b}`;
   },
   {
     name: "divide",
@@ -79,7 +84,7 @@ async function llmCall(state) {
 
 // from here, tools node are
 
-const toolNode = new toolNode(tools);
+const toolNode = new ToolNode(tools);
 
 // Conditional edge function to route to the tool node or end
 function shouldContinue(state) {
@@ -107,3 +112,13 @@ const agentBuilder = new StateGraph(MessagesAnnotation)
   })
   .addEdge("tools", "llmCall")
   .compile();
+
+// Invoke
+const messages = [
+  {
+    role: "user",
+    content: "Add 3 and 4.",
+  },
+];
+const result = await agentBuilder.invoke({ messages });
+console.log(result.messages);

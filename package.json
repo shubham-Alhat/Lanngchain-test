@@ -2,6 +2,7 @@
   "name": "langgraph-test",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -12,6 +13,8 @@
     "@langchain/core": "^0.3.62",
     "@langchain/langgraph": "^0.3.6",
     "@langchain/openai": "^0.5.18",
-    "zod": "^3.25.75"
+    "dotenv": "^17.1.0",
+    "openai": "^5.8.2",
+    "zod": "^3.25.76"
   }
 }
